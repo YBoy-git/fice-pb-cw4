@@ -73,7 +73,6 @@ void getChoice(char *choice, const char *message)
 void getAngle(degrees_t *angle, const char *message)
 {
     getInput(angle, "%lf", message);
-    *angle = degreesToRadians(*angle);
 }
 
 void getStep(degrees_t *step, radians_t angle1, radians_t angle2, const char *message)
@@ -88,7 +87,6 @@ void getStep(degrees_t *step, radians_t angle1, radians_t angle2, const char *me
                 printf("Invalid step, try again\n");
             }
         } while ((angle1 < angle2 && *step <= 0) || (angle1 > angle2 && *step >= 0));
-        *step = degreesToRadians(*step);
     }
 }
 
@@ -161,28 +159,30 @@ double easeRadians(radians_t angle)
     return angle;
 }
 
-double calculateCosWithPrecision(radians_t angle, double precision);
-double calculateSinWithPrecision(radians_t angle, double precision)
+double calculateCosWithPrecision(degrees_t, double);
+double calculateSinWithPrecision(degrees_t a, double precision)
 {
-    angle = easeRadians(angle);
+    a = easeDegrees(a);
 
-    // shrink angle to [0, M_PI / 2)
-    if (angle >= M_PI)
+    // shrink angle to [0, 180)
+    if (a >= 180)
     {
-        return -calculateSinWithPrecision(angle - M_PI, precision);
+        return -calculateSinWithPrecision(a - 180, precision);
     }
 
-    // shrink angle to [0, M_PI / 2)
-    if (angle >= M_PI / 2)
+    // shrink angle to [0, 90)
+    if (a >= 90)
     {
-        return calculateCosWithPrecision(angle - M_PI / 2, precision);
+        return calculateCosWithPrecision(a - 90, precision);
     }
 
-    // shrink angle to [0, M_PI / 4]
-    if (angle > M_PI / 4)
+    // shrink angle to [0, 45]
+    if (a > 45)
     {
-        return calculateCosWithPrecision(M_PI / 2 - angle, precision);
+        return calculateCosWithPrecision(90 - a, precision);
     }
+
+    radians_t angle = degreesToRadians(a);
 
     double sine = 0;
     double term = angle;
@@ -196,27 +196,29 @@ double calculateSinWithPrecision(radians_t angle, double precision)
     return sine;
 }
 
-double calculateCosWithPrecision(radians_t angle, double precision)
+double calculateCosWithPrecision(degrees_t a, double precision)
 {
-    angle = easeRadians(angle);
-
-    // shrink angle to [0, M_PI / 2)
-    if (angle >= M_PI)
+    a = easeDegrees(a);
+    
+    // shrink angle to [0, 180)
+    if (a >= 180)
     {
-        return -calculateCosWithPrecision(angle - M_PI, precision);
+        return -calculateCosWithPrecision(a - 180, precision);
     }
 
-    // shrink angle to [0, M_PI / 2)
-    if (angle >= M_PI / 2)
+    // shrink angle to [0, 90)
+    if (a >= 90)
     {
-        return -calculateSinWithPrecision(angle - M_PI / 2, precision);
+        return -calculateSinWithPrecision(a - 90, precision);
     }
 
-    // shrink angle to [0, M_PI / 4]
-    if (angle > M_PI / 4)
+    // shrink angle to [0, 45]
+    if (a > 45)
     {
-        return calculateSinWithPrecision(M_PI / 2 - angle, precision);
+        return calculateSinWithPrecision(90 - a, precision);
     }
+
+    radians_t angle = degreesToRadians(a);
 
     double cosine = 0;
     double term = 1;
@@ -237,7 +239,7 @@ char *getCalculationFormat(double precision)
     return calculationFormat;
 }
 
-void sinWrapper(radians_t begin, radians_t end, radians_t step, double precision)
+void sinWrapper(degrees_t begin, degrees_t end, degrees_t step, double precision)
 {
     char *degreesFormat = "%lf\t\t";
     char *calculationFormat = getCalculationFormat(precision);
@@ -245,10 +247,10 @@ void sinWrapper(radians_t begin, radians_t end, radians_t step, double precision
     printf("x | sin(x) | taylorSin(x) | diff\n");
     do
     {
-        const double sine = sin(begin);
+        const double sine = sin(degreesToRadians(begin));
         const double taylorSine = calculateSinWithPrecision(begin, precision);
 
-        printf(degreesFormat, radiansToDegrees(begin));
+        printf(degreesFormat, begin);
         printf(calculationFormat, sine);
         printf(calculationFormat, taylorSine);
         printf(calculationFormat, sine - taylorSine);
@@ -260,7 +262,7 @@ void sinWrapper(radians_t begin, radians_t end, radians_t step, double precision
     free(calculationFormat);
 }
 
-void cosWrapper(radians_t begin, radians_t end, radians_t step, double precision)
+void cosWrapper(degrees_t begin, degrees_t end, degrees_t step, double precision)
 {
     char *degreesFormat = "%lf\t\t";
     char *calculationFormat = getCalculationFormat(precision);
@@ -268,10 +270,10 @@ void cosWrapper(radians_t begin, radians_t end, radians_t step, double precision
     printf("x | cos(x) | taylorCos(x) | diff\n");
     do
     {
-        const double cosine = cos(begin);
+        const double cosine = cos(degreesToRadians(begin));
         const double taylorCosine = calculateCosWithPrecision(begin, precision);
 
-        printf(degreesFormat, radiansToDegrees(begin));
+        printf(degreesFormat, begin);
         printf(calculationFormat, cosine);
         printf(calculationFormat, taylorCosine);
         printf(calculationFormat, cosine - taylorCosine);
