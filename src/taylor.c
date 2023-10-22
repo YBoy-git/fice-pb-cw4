@@ -166,7 +166,7 @@ double calculateSinWithPrecision(radians_t angle, double precision)
 {
     angle = easeRadians(angle);
 
-    // shrink angle to [0, M_PI / 2)
+    // shrink angle to [0, M_PI)
     if (angle >= M_PI)
     {
         return -calculateSinWithPrecision(angle - M_PI, precision);
@@ -200,7 +200,7 @@ double calculateCosWithPrecision(radians_t angle, double precision)
 {
     angle = easeRadians(angle);
 
-    // shrink angle to [0, M_PI / 2)
+    // shrink angle to [0, M_PI)
     if (angle >= M_PI)
     {
         return -calculateCosWithPrecision(angle - M_PI, precision);
