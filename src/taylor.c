@@ -41,12 +41,12 @@ void getInput(void *input, char *format, const char *message)
     } while (temp != '\n');
 }
 
-double radiansToDegrees(radians_t angle)
+degrees_t radiansToDegrees(radians_t angle)
 {
     return angle * 180.0 / M_PI;
 }
 
-double degreesToRadians(degrees_t angle)
+radians_t degreesToRadians(degrees_t angle)
 {
     return angle * M_PI / 180.0;
 }
