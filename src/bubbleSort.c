@@ -1,6 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #define MAX_ARRAY_LENGTH 1000
+
+#define RANDOM_LOWER_BOUND -100000
+#define RANDOM_UPPER_BOUND 100000
 
 void bubbleSort(double *array, size_t arrayLength)
 {
@@ -63,7 +68,34 @@ void getArrayLength(size_t *arrayLength, const char *prompt)
     } while (!isArrayLengthValid(*arrayLength));
 }
 
-void getArrayElements(double *array, size_t arrayLength, const char *prompt)
+char isInputTypeCorrect(char inputType)
+{
+    if (inputType != 'u' && inputType != 'r')
+    {
+        printf("Invalid option, try again\n");
+        return 0;
+    }
+    return 1;
+}
+
+void getInputType(char *inputType, const char *prompt)
+{
+    do
+    {
+        getInput(inputType, "%c", prompt);
+    } while (!isInputTypeCorrect(*inputType));
+}
+
+void getRandomArrayElements(double *array, size_t arrayLength)
+{
+    srand(time(NULL));
+    for (size_t i = 0; i < arrayLength; i++)
+    {
+        array[i] = (double)rand() / RAND_MAX * (RANDOM_UPPER_BOUND - RANDOM_LOWER_BOUND) + RANDOM_LOWER_BOUND;
+    }
+}
+
+void getArrayElementsFromUser(double *array, size_t arrayLength, const char *prompt)
 {
     printf("%s", prompt);
 
@@ -72,6 +104,22 @@ void getArrayElements(double *array, size_t arrayLength, const char *prompt)
         char elementPrompt[7];
         sprintf(elementPrompt, "%zu: ", i + 1);
         getInput(&array[i], "%lf", elementPrompt);
+    }
+}
+
+void getArray(double *array, size_t arrayLength, char inputType)
+{
+    if (inputType == 'u')
+    {
+        getArrayElementsFromUser(array, arrayLength, "Enter elements:\n");
+    }
+    else if (inputType == 'r')
+    {
+        getRandomArrayElements(array, arrayLength);
+    }
+    else
+    {
+        printf("Invalid input type in getArray()\n");
     }
 }
 
@@ -92,8 +140,11 @@ void UI()
     size_t arrayLength = 0;
     getArrayLength(&arrayLength, "Enter the length of the array: ");
 
+    char inputType = 0;
+    getInputType(&inputType, "Enter input type (u - user input, r - random): ");
+
     double array[arrayLength];
-    getArrayElements(array, arrayLength, "Enter elements:\n");
+    getArray(array, arrayLength, inputType);
 
     printf("Before sorting: ");
     printArray(array, arrayLength);
