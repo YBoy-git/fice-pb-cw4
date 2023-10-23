@@ -1,0 +1,121 @@
+#include <stdio.h>
+
+#define MAX_ARRAY_LENGTH 1000
+
+void bubbleSort(double *array, size_t arrayLength)
+{
+    for (size_t i = 0; i < arrayLength - 1; i++)
+    {
+        for (size_t j = i + 1; j < arrayLength; j++)
+        {
+            if (array[i] > array[j])
+            {
+                double temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+        }
+    }
+}
+
+void clearIB()
+{
+    while (getchar() != '\n')
+        ;
+}
+
+void getInput(void *input, char *format, const char *prompt)
+{
+    char temp = 0;
+
+    do
+    {
+        printf("%s", prompt);
+        int status = scanf(format, input) + scanf("%c", &temp);
+        if (status != 2 || temp != '\n')
+        {
+            printf("Invalid input, the format is %s, try again\n", format);
+            clearIB();
+        }
+    } while (temp != '\n');
+}
+
+char isArrayLengthValid(size_t arrayLength)
+{
+    if (arrayLength < 1)
+    {
+        printf("Invalid input, the length must be greater than 0, try again\n");
+        return 0;
+    }
+    else if (arrayLength > MAX_ARRAY_LENGTH)
+    {
+        printf("Invalid input, the length must be less than or equal to %d, try again\n", MAX_ARRAY_LENGTH);
+        return 0;
+    }
+    return 1;
+}
+
+void getArrayLength(size_t *arrayLength, const char *prompt)
+{
+    do
+    {
+        getInput(arrayLength, "%zu", prompt);
+    } while (!isArrayLengthValid(*arrayLength));
+}
+
+void getArrayElements(double *array, size_t arrayLength, const char *prompt)
+{
+    printf("%s", prompt);
+
+    for (size_t i = 0; i < arrayLength; i++)
+    {
+        char elementPrompt[7];
+        sprintf(elementPrompt, "%zu: ", i + 1);
+        getInput(&array[i], "%lf", elementPrompt);
+    }
+}
+
+void printArray(double *array, size_t arrayLength)
+{
+    printf("[");
+    for (size_t i = 0; i < arrayLength; i++)
+    {
+        printf("%lf", array[i]);
+        if (i != arrayLength - 1)
+            printf(", ");
+    }
+    printf("]\n");
+}
+
+void UI()
+{
+    size_t arrayLength = 0;
+    getArrayLength(&arrayLength, "Enter the length of the array: ");
+
+    double array[arrayLength];
+    getArrayElements(array, arrayLength, "Enter elements:\n");
+
+    printf("Before sorting: ");
+    printArray(array, arrayLength);
+
+    bubbleSort(array, arrayLength);
+
+    printf("After sorting: ");
+    printArray(array, arrayLength);
+}
+
+void endless(void (*function)())
+{
+    do
+    {
+        function();
+        printf("Press ENTER to continue or any other key to exit\n");
+    } while (getchar() == '\n');
+}
+
+int main()
+{
+    endless(UI);
+
+    return 0;
+}
