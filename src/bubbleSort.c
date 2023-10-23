@@ -1,11 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #define MAX_ARRAY_LENGTH 1000
 
 #define RANDOM_LOWER_BOUND -100000
 #define RANDOM_UPPER_BOUND 100000
+
+const char inputTypes[] = {'u', 'r'};
+const char sortingTypes[] = {'a', 'd'};
 
 void bubbleSort(double *array, size_t arrayLength)
 {
@@ -23,6 +27,16 @@ void bubbleSort(double *array, size_t arrayLength)
     }
 }
 
+void reverseArray(double *array, size_t arrayLength)
+{
+    for (size_t i = 0; i < arrayLength / 2; i++)
+    {
+        double temp = array[i];
+        array[i] = array[arrayLength - 1 - i];
+        array[arrayLength - 1 - i] = temp;
+    }
+}
+
 void clearIB()
 {
     while (getchar() != '\n')
@@ -32,7 +46,6 @@ void clearIB()
 void getInput(void *input, char *format, const char *prompt)
 {
     char temp = 0;
-
     do
     {
         printf("%s", prompt);
@@ -68,9 +81,9 @@ void getArrayLength(size_t *arrayLength, const char *prompt)
     } while (!isArrayLengthValid(*arrayLength));
 }
 
-char isInputTypeCorrect(char inputType)
+char isOptionValid(char choice, const char *options)
 {
-    if (inputType != 'u' && inputType != 'r')
+    if (!strchr(options, choice))
     {
         printf("Invalid option, try again\n");
         return 0;
@@ -78,12 +91,12 @@ char isInputTypeCorrect(char inputType)
     return 1;
 }
 
-void getInputType(char *inputType, const char *prompt)
+void getOption(char *choice, const char *options, const char *prompt)
 {
     do
     {
-        getInput(inputType, "%c", prompt);
-    } while (!isInputTypeCorrect(*inputType));
+        getInput(choice, "%c", prompt);
+    } while (!strchr(options, *choice));
 }
 
 void getRandomArrayElements(double *array, size_t arrayLength)
@@ -141,7 +154,10 @@ void UI()
     getArrayLength(&arrayLength, "Enter the length of the array: ");
 
     char inputType = 0;
-    getInputType(&inputType, "Enter input type (u - user input, r - random): ");
+    getOption(&inputType, inputTypes, "Enter input type (u - user input, r - random): ");
+
+    char sortingType = 0;
+    getOption(&sortingType, sortingTypes, "Enter sorting type (a - ascending, d - descending): ");
 
     double array[arrayLength];
     getArray(array, arrayLength, inputType);
@@ -150,6 +166,10 @@ void UI()
     printArray(array, arrayLength);
 
     bubbleSort(array, arrayLength);
+    if (sortingType == 'd')
+    {
+        reverseArray(array, arrayLength);
+    }
 
     printf("After sorting: ");
     printArray(array, arrayLength);
