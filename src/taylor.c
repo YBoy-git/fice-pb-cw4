@@ -9,16 +9,6 @@
 typedef double degrees_t;
 typedef double radians_t;
 
-long long getFactorial(int n)
-{
-    long long factorial = 1;
-    for (int i = 2; i <= n; i++)
-    {
-        factorial *= i;
-    }
-    return factorial;
-}
-
 void clearIB()
 {
     while (getchar() != '\n')
@@ -39,6 +29,16 @@ void getInput(void *input, char *format, const char *message)
             clearIB();
         }
     } while (temp != '\n');
+}
+
+long long getFactorial(int n)
+{
+    long long factorial = 1;
+    for (int i = 2; i <= n; i++)
+    {
+        factorial *= i;
+    }
+    return factorial;
 }
 
 degrees_t radiansToDegrees(radians_t angle)
@@ -199,7 +199,7 @@ double calculateSinWithPrecision(degrees_t a, double precision)
 double calculateCosWithPrecision(degrees_t a, double precision)
 {
     a = easeDegrees(a);
-    
+
     // shrink angle to [0, 180)
     if (a >= 180)
     {
