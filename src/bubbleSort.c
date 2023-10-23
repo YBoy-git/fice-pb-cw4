@@ -2,38 +2,37 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <math.h>
 
 #define MAX_ARRAY_LENGTH 1000
 
 #define RANDOM_LOWER_BOUND -100000
 #define RANDOM_UPPER_BOUND 100000
 
-const char inputTypes[] = {'u', 'r'};
-const char sortingTypes[] = {'a', 'd'};
+const char inputTypes[] = {'u', 'r', '\0'};
+const char sortingTypes[] = {'a', 'd', '\0'};
 
-void bubbleSort(double *array, size_t arrayLength)
+void swapElements(double *a, double *b)
 {
+    double temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// order = 1 for ascending, order = -1 for descending
+void bubbleSort(double *array, size_t arrayLength, int order)
+{
+    order = order / abs(order);
+
     for (size_t i = 0; i < arrayLength - 1; i++)
     {
         for (size_t j = i + 1; j < arrayLength; j++)
         {
-            if (array[i] > array[j])
+            if (order * array[i] > order * array[j])
             {
-                double temp = array[i];
-                array[i] = array[j];
-                array[j] = temp;
+                swapElements(&array[i], &array[j]);
             }
         }
-    }
-}
-
-void reverseArray(double *array, size_t arrayLength)
-{
-    for (size_t i = 0; i < arrayLength / 2; i++)
-    {
-        double temp = array[i];
-        array[i] = array[arrayLength - 1 - i];
-        array[arrayLength - 1 - i] = temp;
     }
 }
 
@@ -96,7 +95,7 @@ void getOption(char *choice, const char *options, const char *prompt)
     do
     {
         getInput(choice, "%c", prompt);
-    } while (!strchr(options, *choice));
+    } while (!isOptionValid(*choice, options));
 }
 
 void getRandomArrayElements(double *array, size_t arrayLength)
@@ -162,17 +161,15 @@ void UI()
     double array[arrayLength];
     getArray(array, arrayLength, inputType);
 
-    printf("Before sorting: ");
+    printf("\tBefore sorting: ");
     printArray(array, arrayLength);
+    printf("\n");
 
-    bubbleSort(array, arrayLength);
-    if (sortingType == 'd')
-    {
-        reverseArray(array, arrayLength);
-    }
+    bubbleSort(array, arrayLength, sortingType == 'a' ? 1 : -1);
 
-    printf("After sorting: ");
+    printf("\tAfter sorting: ");
     printArray(array, arrayLength);
+    printf("\n");
 }
 
 void endless(void (*function)())
