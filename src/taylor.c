@@ -63,7 +63,6 @@ char isChoiceCorrect(char choice)
 
 void getChoice(char *choice, const char *message)
 {
-    char temp = 0;
     do
     {
         getInput(choice, "%c", message);
