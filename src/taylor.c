@@ -252,7 +252,7 @@ void sinWrapper(degrees_t begin, degrees_t end, degrees_t step, double precision
         printf(degreesFormat, begin);
         printf(calculationFormat, sine);
         printf(calculationFormat, taylorSine);
-        printf(calculationFormat, sine - taylorSine);
+        printf("%e", sine - taylorSine);
 
         printf("\n");
         begin += step;
@@ -275,7 +275,7 @@ void cosWrapper(degrees_t begin, degrees_t end, degrees_t step, double precision
         printf(degreesFormat, begin);
         printf(calculationFormat, cosine);
         printf(calculationFormat, taylorCosine);
-        printf(calculationFormat, cosine - taylorCosine);
+        printf("%e", cosine - taylorCosine);
 
         printf("\n");
         begin += step;
