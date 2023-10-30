@@ -22,8 +22,19 @@ void getInput(void *input, char *format, const char *message)
     do
     {
         printf("%s", message);
-        int status = scanf(format, input) + scanf("%c", &temp);
-        if (status != 2 || temp != '\n')
+        int status = scanf(format, input);
+        if (*((char*) input) == '\n')
+        {
+            continue;
+        }
+        if (status != 1)
+        {
+            printf("Invalid input, the format is %s, try again\n", format);
+            clearIB();
+            continue;
+        }
+        status = scanf  ("%c", &temp);
+        if (temp != '\n')
         {
             printf("Invalid input, the format is %s, try again\n", format);
             clearIB();
