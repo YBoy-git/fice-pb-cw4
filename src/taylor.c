@@ -74,6 +74,26 @@ void getAngle(degrees_t *angle, const char *message)
     getInput(angle, "%lf", message);
 }
 
+char isStepCorrect(degrees_t angle1, degrees_t angle2, degrees_t step)
+{
+    if (angle1 < angle2 && step <= 0)
+    {
+        printf("Step must be positive, try again\n");
+        return 0;
+    }
+    if (angle1 > angle2 && step >= 0)
+    {
+        printf("Step must be negative, try again\n");
+        return 0;
+    }
+    if (fabs(angle2 - angle1) < fabs(step))
+    {
+        printf("Step is too big, try again\n");
+        return 0;
+    }
+    return 1;
+}
+
 void getStep(degrees_t *step, radians_t angle1, radians_t angle2, const char *message)
 {
     if (angle1 != angle2)
@@ -81,11 +101,7 @@ void getStep(degrees_t *step, radians_t angle1, radians_t angle2, const char *me
         do
         {
             getInput(step, "%lf", "Enter step: ");
-            if ((angle1 < angle2 && *step <= 0) || (angle1 > angle2 && *step >= 0))
-            {
-                printf("Invalid step, try again\n");
-            }
-        } while ((angle1 < angle2 && *step <= 0) || (angle1 > angle2 && *step >= 0));
+        } while (!isStepCorrect(angle1, angle2, *step));
     }
 }
 
@@ -240,7 +256,7 @@ char *getCalculationFormat(double precision)
 
 void sinWrapper(degrees_t begin, degrees_t end, degrees_t step, double precision)
 {
-    char *degreesFormat = "%lf\t\t";
+    char *degreesFormat = "%lg\t\t";
     char *calculationFormat = getCalculationFormat(precision);
 
     printf("x | sin(x) | taylorSin(x) | diff\n");
@@ -263,7 +279,7 @@ void sinWrapper(degrees_t begin, degrees_t end, degrees_t step, double precision
 
 void cosWrapper(degrees_t begin, degrees_t end, degrees_t step, double precision)
 {
-    char *degreesFormat = "%lf\t\t";
+    char *degreesFormat = "%lg\t\t";
     char *calculationFormat = getCalculationFormat(precision);
 
     printf("x | cos(x) | taylorCos(x) | diff\n");
@@ -318,18 +334,17 @@ void UI()
     printf("\n");
 }
 
-void endless(void (*function)())
+int endless(void (*function)())
 {
     do
     {
         function();
         printf("Press ENTER to continue or any other key to exit\n");
     } while (getchar() == '\n');
+    return 0;
 }
 
 int main()
 {
-    endless(UI);
-
-    return 0;
+    return endless(UI);
 }
