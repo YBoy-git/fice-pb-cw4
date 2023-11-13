@@ -23,7 +23,7 @@ void getInput(void *input, char *format, const char *message)
     {
         printf("%s", message);
         int status = scanf(format, input);
-        if (*((char*) input) == '\n')
+        if (*((char *)input) == '\n')
         {
             continue;
         }
@@ -33,7 +33,7 @@ void getInput(void *input, char *format, const char *message)
             clearIB();
             continue;
         }
-        status = scanf  ("%c", &temp);
+        status = scanf("%c", &temp);
         if (temp != '\n')
         {
             printf("Invalid input, the format is %s, try again\n", format);
@@ -265,50 +265,63 @@ char *getCalculationFormat(double precision)
     return calculationFormat;
 }
 
-void sinWrapper(degrees_t begin, degrees_t end, degrees_t step, double precision)
+void printWrapper(degrees_t angle, double a, double b, double precision)
 {
     char *degreesFormat = "%lg\t\t";
     char *calculationFormat = getCalculationFormat(precision);
 
+    printf(degreesFormat, angle);
+    printf(calculationFormat, a);
+    printf(calculationFormat, b);
+    printf("%e", a - b);
+}
+
+void printSineRow(degrees_t angle, double precision)
+{
+    const double sine = sin(degreesToRadians(angle));
+    const double taylorSine = calculateSinWithPrecision(angle, precision);
+
+    printWrapper(angle, sine, taylorSine, precision);
+    printf("\n");
+}
+
+void sinWrapper(degrees_t begin, degrees_t end, degrees_t step, double precision)
+{
     printf("x | sin(x) | taylorSin(x) | diff\n");
     do
     {
-        const double sine = sin(degreesToRadians(begin));
-        const double taylorSine = calculateSinWithPrecision(begin, precision);
+        printSineRow(begin, precision);
 
-        printf(degreesFormat, begin);
-        printf(calculationFormat, sine);
-        printf(calculationFormat, taylorSine);
-        printf("%e", sine - taylorSine);
-
-        printf("\n");
         begin += step;
     } while ((step > 0 && begin <= end) || (step < 0 && begin >= end));
+    if (fabs(begin - step - end) > precision)
+    {
+        printSineRow(end, precision);
+    }
+}
 
-    free(calculationFormat);
+void printCosineRow(degrees_t angle, double precision)
+{
+    const double cosine = sin(degreesToRadians(angle));
+    const double taylorCosine = calculateSinWithPrecision(angle, precision);
+
+    printWrapper(angle, cosine, taylorCosine, precision);
+    printf("\n");
 }
 
 void cosWrapper(degrees_t begin, degrees_t end, degrees_t step, double precision)
 {
-    char *degreesFormat = "%lg\t\t";
-    char *calculationFormat = getCalculationFormat(precision);
-
     printf("x | cos(x) | taylorCos(x) | diff\n");
     do
     {
-        const double cosine = cos(degreesToRadians(begin));
-        const double taylorCosine = calculateCosWithPrecision(begin, precision);
+        printCosineRow(begin, precision);
 
-        printf(degreesFormat, begin);
-        printf(calculationFormat, cosine);
-        printf(calculationFormat, taylorCosine);
-        printf("%e", cosine - taylorCosine);
-
-        printf("\n");
         begin += step;
     } while ((step > 0 && begin <= end) || (step < 0 && begin >= end));
-
-    free(calculationFormat);
+    if (fabs(begin - step - end) > precision)
+    {
+        printCosineRow(end, precision);
+    }
 }
 
 void UI()
